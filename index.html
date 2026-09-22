@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>樱花动漫 - 次元入口，触手可及</title>
+<meta name="description" content="樱花动漫：纯净无广 · 极速追番 · 4K画质。每日实时更新，新番第一时间看。下载 Android 版，把春天装进口袋。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FF69B4'/%3E%3Cpath d='M32 10c2.6 6.5 6.5 10.4 0 21-6.5-10.6-2.6-14.5 0-21z' fill='%23fff'/%3E%3Cpath d='M47 18c1.2 5.8 4.3 9 11 15.5-6.7 1.2-10 3.2-11 9.5-1-6.3-4.3-8.3-11-9.5 6.7-6.5 9.8-9.7 11-15.5z' fill='%23fff' opacity='.92'/%3E%3Cpath d='M17 18c1.2 5.8 4.3 9 11 15.5-6.7 1.2-10 3.2-11 9.5-1-6.3-4.3-8.3-11-9.5C12.7 27 15.8 23.8 17 18z' fill='%23fff' opacity='.92'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap">
+<style>
+/* ===== 基础与设计变量 ===== */
+:root{
+  --bg:#1A1A1A;
+  --bg-soft:#211D21;
+  --bg-deep:#141114;
+  --pink:#FF69B4;
+  --pink-light:#FF9BCB;
+  --pink-pale:#FFD6EA;
+  --pink-deep:#E14D9C;
+  --text:#F7F0F5;
+  --text-dim:#B9A8B3;
+  --text-faint:#8F7E88;
+  --line:rgba(255,255,255,.08);
+  --pink-line:rgba(255,105,180,.28);
+  --font-display:'Ma Shan Zheng','STKaiti','KaiTi','Kaiti SC',cursive;
+  --font-body:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(255,105,180,.35);color:#fff}
+:focus-visible{outline:2px solid var(--pink);outline-offset:2px;border-radius:6px}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit}
+
+/* 细颗粒质感，避免纯色生硬 */
+body::after{
+  content:"";
+  position:fixed;inset:0;z-index:80;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  opacity:.035;mix-blend-mode:overlay;
+}
+
+/* ===== 飘落樱花（唯一动效锚点） ===== */
+.petals{position:fixed;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.petal{
+  position:absolute;top:-36px;left:var(--x);
+  width:var(--sz);height:var(--sz);opacity:var(--o);
+  animation:fall var(--d) linear var(--dl) infinite;
+  will-change:transform;
+}
+.petal svg{display:block;width:100%;height:100%;fill:var(--c);animation:spin calc(var(--d)*.9) ease-in-out infinite alternate}
+@keyframes fall{
+  from{transform:translate3d(0,-4vh,0)}
+  to{transform:translate3d(var(--sway),112vh,0)}
+}
+@keyframes spin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(230deg)}
+}
+
+/* ===== 顶部导航 ===== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px clamp(20px,4vw,48px);
+  background:linear-gradient(180deg,rgba(20,17,20,.72),rgba(20,17,20,0));
+}
+.nav-brand{display:flex;align-items:center;gap:10px;padding:6px 0}
+.nav-brand img{width:36px;height:36px;border-radius:10px;box-shadow:0 4px 14px rgba(255,105,180,.25)}
+.nav-brand span{font-family:var(--font-display);font-size:1.3rem;color:#fff;letter-spacing:.06em}
+.nav-cta{
+  display:inline-flex;align-items:center;min-height:44px;
+  font-size:.85rem;font-weight:600;color:var(--pink-light);
+  border:1px solid var(--pink-line);border-radius:999px;
+  padding:10px 20px;transition:background .2s,color .2s;
+}
+.nav-cta:hover{background:rgba(255,105,180,.14);color:#fff}
+
+/* ===== Hero 首屏 ===== */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background-image:url("https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/J7hfbZ9qdoG50LxOKZkcc7pYnbb");
+  background-size:cover;background-position:center 30%;
+}
+.hero-scrim{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg,
+    rgba(26,26,26,.06) 0%,
+    rgba(26,26,26,.34) 40%,
+    rgba(24,17,21,.84) 72%,
+    rgba(26,26,26,.98) 100%);
+}
+.hero-content{
+  position:relative;z-index:10;
+  width:min(560px,46vw);
+  margin-left:auto;
+  margin-right:clamp(24px,6vw,104px);
+  padding:120px 0 40px;
+}
+.hero-title{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(3.2rem,9vw,5.6rem);line-height:1.12;color:#fff;
+  background:linear-gradient(180deg,#FFF0F7 20%,#FFB6D9 60%,var(--pink) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 6px 40px rgba(255,105,180,.28);
+}
+.hero-slogan{
+  margin-top:6px;
+  font-family:var(--font-display);font-size:clamp(1.25rem,3vw,1.7rem);
+  color:var(--pink-pale);letter-spacing:.1em;
+}
+.hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;list-style:none}
+.hero-badges li{
+  font-size:.88rem;font-weight:500;color:#EFE0E9;letter-spacing:.12em;
+  border:1px solid rgba(255,255,255,.16);border-radius:999px;
+  padding:7px 15px;background:rgba(20,17,20,.42);
+}
+.btn-download{
+  margin-top:34px;display:inline-flex;align-items:center;gap:10px;
+  font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.04em;
+  background:linear-gradient(135deg,#FF86C4,#F452A6 55%,#E14D9C);
+  border:none;border-radius:999px;padding:17px 38px;cursor:pointer;
+  box-shadow:0 12px 34px rgba(255,105,180,.34),0 2px 10px rgba(255,105,180,.5);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.btn-download:hover{transform:translateY(-2px);box-shadow:0 16px 44px rgba(255,105,180,.46),0 2px 12px rgba(255,105,180,.6)}
+.btn-download:active{transform:translateY(0)}
+.btn-download svg{width:20px;height:20px;fill:#fff}
+
+.ios-alert{margin-top:30px;max-width:440px}
+.ios-alert p{font-size:.9rem;color:#D9C9D2;line-height:1.8}
+.ios-alert p b{color:var(--pink-pale);font-weight:600}
+.subscribe{display:flex;gap:10px;margin-top:12px}
+.subscribe input{
+  flex:1;min-width:0;font-size:.9rem;color:#fff;
+  background:rgba(20,17,20,.55);border:1px solid rgba(255,255,255,.24);
+  border-radius:12px;padding:12px 16px;transition:border-color .2s;
+}
+.subscribe input::placeholder{color:var(--text-faint)}
+.subscribe input:focus{outline:none;border-color:var(--pink)}
+.subscribe button{
+  flex-shrink:0;font-size:.9rem;font-weight:600;color:var(--pink-light);cursor:pointer;
+  background:transparent;border:1px solid var(--pink-line);border-radius:12px;padding:12px 18px;
+  transition:background .2s,color .2s;
+}
+.subscribe button:hover{background:rgba(255,105,180,.14);color:#fff}
+
+/* 音乐播放器 */
+.music-player{margin-top:26px;max-width:440px}
+.music-label{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--pink-pale);margin-bottom:10px}
+.music-label svg{width:16px;height:16px;fill:var(--pink-light);flex-shrink:0}
+.music-player audio{
+  display:block;width:100%;height:44px;color-scheme:dark;
+  background:rgba(20,17,20,.55);border:1px solid var(--pink-line);
+  border-radius:999px;padding:0 8px;
+}
+
+/* ===== 核心亮点 ===== */
+.features{position:relative;padding:104px 24px 96px;overflow:hidden;
+  background:
+    radial-gradient(60% 46% at 50% 0%,rgba(255,105,180,.10),transparent 70%),
+    var(--bg);
+}
+.torii{
+  position:absolute;right:0;top:60px;width:min(460px,58vw);
+  color:var(--pink-light);opacity:.07;pointer-events:none;z-index:0;
+}
+.features-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;text-align:center}
+.section-eyebrow{
+  font-size:.88rem;font-weight:600;letter-spacing:.4em;color:var(--pink);
+}
+.features-title{
+  margin-top:14px;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(1.9rem,4.6vw,2.7rem);line-height:1.3;color:#fff;
+}
+.features-sub{margin-top:12px;font-size:.92rem;color:var(--text-dim)}
+.feature-list{list-style:none;margin:46px auto 0;max-width:620px;display:flex;flex-direction:column;gap:18px;text-align:left}
+.feature-list li{
+  display:flex;align-items:flex-start;gap:18px;
+  padding:24px 26px;border-radius:18px;
+  background:var(--bg-soft);border:1px solid var(--line);
+  transition:border-color .25s,transform .25s;
+}
+.feature-list li:hover{border-color:var(--pink-line);transform:translateY(-3px)}
+.feature-icon{
+  flex-shrink:0;width:50px;height:50px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,105,180,.13);border:1px solid rgba(255,105,180,.2);
+}
+.feature-icon svg{width:24px;height:24px;fill:var(--pink-light)}
+.feature-txt h3{font-size:1.06rem;font-weight:700;color:#fff;letter-spacing:.04em}
+.feature-txt p{margin-top:5px;font-size:.88rem;color:var(--text-dim);line-height:1.85}
+
+/* ===== 底部 / 下载 ===== */
+.footer{position:relative;background:var(--bg-deep);border-top:1px solid rgba(255,255,255,.05);padding:76px 24px 0;scroll-margin-top:40px}
+.footer-inner{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:48px;flex-wrap:wrap}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-brand img{width:34px;height:34px;border-radius:10px}
+.footer-brand span{font-family:var(--font-display);font-size:1.25rem;color:#fff}
+.copyright{margin-top:14px;font-size:.88rem;color:var(--text-faint)}
+.footer-links{margin-top:10px;font-size:.85rem}
+.footer-links a{color:var(--pink-light);transition:color .2s}
+.footer-links a:hover{color:#fff}
+.footer-links i{font-style:normal;color:var(--text-faint);margin:0 10px}
+.qr-card{text-align:center}
+.qr-box{
+  background:#fff;padding:12px;border-radius:16px;width:158px;margin:0 auto;
+  box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06);
+}
+.qr-box img{width:134px;height:134px}
+.qr-card p{margin-top:12px;font-size:.9rem;color:var(--text-dim)}
+.footer-word{
+  margin-top:56px;text-align:center;user-select:none;pointer-events:none;
+  font-family:var(--font-display);font-size:clamp(4.5rem,14vw,9rem);line-height:1;
+  color:rgba(255,105,180,.06);transform:translateY(18%);
+}
+
+/* ===== Toast 反馈 ===== */
+.toast{
+  position:fixed;left:50%;bottom:28px;z-index:100;transform:translate(-50%,16px);
+  background:#2B2228;color:var(--pink-pale);border:1px solid var(--pink-line);
+  border-radius:12px;padding:12px 22px;font-size:.88rem;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ===== 移动端适配 ===== */
+@media (max-width:767px){
+  .hero-bg{background-image:url("https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Ogk2baUzroqNiLxWskKcRrOvnZe");background-position:center 18%}
+  .hero-scrim{background:linear-gradient(180deg,rgba(26,26,26,.10) 0%,rgba(26,26,26,.26) 42%,rgba(26,26,26,.94) 100%)}
+  .hero-content{width:100%;margin:0;padding:0 24px 56px;text-align:center;align-self:flex-end}
+  .hero-badges{justify-content:center}
+  .btn-download{margin-left:auto;margin-right:auto}
+  .ios-alert{margin-left:auto;margin-right:auto}
+  .music-player{margin-left:auto;margin-right:auto;width:100%}
+  .subscribe{flex-direction:column}
+  .subscribe button{width:100%}
+  .subscribe input{font-size:16px}
+  .torii{right:0;top:20px;width:86vw;opacity:.055}
+  .footer-inner{justify-content:center;text-align:center}
+  .footer-info{width:100%}
+  .footer-brand{justify-content:center}
+  .qr-card{margin-top:8px}
+}
+
+/* ===== 无障碍：减少动效 ===== */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .petals{display:none}
+  .petal,.petal svg{animation:none}
+  .btn-download,.feature-list li{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 飘落樱花 ===== -->
+<div class="petals" aria-hidden="true"></div>
+
+<!-- ===== 顶部导航 ===== -->
+<header class="nav">
+  <a class="nav-brand" href="#top" aria-label="樱花动漫首页">
+    <img src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/EZJQbKY0GoqJEex9dt4clfGPnvc" alt="樱花动漫图标">
+    <span>樱花动漫</span>
+  </a>
+  <a class="nav-cta" href="https://p4-ad.adukwai.com/bs2/ad-app/YWQtYXBwOmFkX2RzcF9hcHA6MzU0MTgwODY5Ok1FUkNIQU5UOltCQDZlNDFkYmNiOjIzNjIyMjg0OTU4ODY5.apk">下载 APP</a>
+</header>
+
+<!-- ===== Hero 首屏 ===== -->
+<section class="hero" id="top">
+  <div class="hero-bg" role="img" aria-label="粉发少女于樱花鸟居前"></div>
+  <div class="hero-scrim"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">樱花动漫</h1>
+    <p class="hero-slogan">次元入口，触手可及</p>
+    <ul class="hero-badges">
+      <li>纯净无广</li>
+      <li>极速追番</li>
+      <li>4K画质</li>
+    </ul>
+    <a class="btn-download" href="https://p4-ad.adukwai.com/bs2/ad-app/YWQtYXBwOmFkX2RzcF9hcHA6MzU0MTgwODY5Ok1FUkNIQU5UOltCQDZlNDFkYmNiOjIzNjIyMjg0OTU4ODY5.apk">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.5a5 5 0 0 0-1.3-9.9A6.5 6.5 0 0 0 4.5 8.2 4.5 4.5 0 0 0 5 17.2h.6v-2H5a2.5 2.5 0 0 1-.4-5 1 1 0 0 0 1-1 4.5 4.5 0 0 1 8.8-1.2 1 1 0 0 0 1.2.7A3 3 0 0 1 17.5 14.5Z"/><path d="M12 11v9m0 0 3.4-3.4M12 20l-3.4-3.4"/></svg>
+      下载 Android 版
+    </a>
+    <div class="ios-alert">
+      <p>iOS 版本正在开发中，敬请期待。现在留下邮箱，<b>上线第一时间通知您</b>。</p>
+      <form class="subscribe" novalidate>
+        <input type="email" placeholder="输入您的 Email 地址" aria-label="邮箱地址" required>
+        <button type="submit">预约提醒</button>
+      </form>
+    </div>
+    <div class="music-player">
+      <p class="music-label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18.5a3 3 0 1 1-2-2.83V6.2l10-2.1v9.57a3 3 0 1 1-2-2.83V7.8L9 9.1v9.4z"/></svg>
+        音乐试听
+      </p>
+      <audio id="bgm" controls autoplay preload="auto" src="https://aerate.s3.cn-north-1.jdcloud-oss.com/2026/9/22/6ab1d19ae4b0e7f3dcb59224.mp3" aria-label="音乐试听播放器"></audio>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心亮点 ===== -->
+<section class="features" id="features">
+  <svg class="torii" viewBox="0 0 400 360" aria-hidden="true" fill="currentColor">
+    <path d="M48 46 Q200 8 352 46 L352 70 Q200 34 48 70 Z"/>
+    <rect x="52" y="84" width="296" height="26" rx="10"/>
+    <rect x="78" y="106" width="34" height="250" rx="8"/>
+    <rect x="288" y="106" width="34" height="250" rx="8"/>
+    <rect x="60" y="158" width="280" height="18" rx="8"/>
+    <rect x="176" y="112" width="48" height="34" rx="6"/>
+  </svg>
+  <div class="features-inner">
+    <p class="section-eyebrow">核心亮点</p>
+    <h2 class="features-title">为纯粹追番而生的体验</h2>
+    <p class="features-sub">没有打扰，只有番剧本身。</p>
+    <ul class="feature-list">
+      <li>
+        <span class="feature-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c2.4 6 6 9.6 12 10-6 .4-9.6 4-12 10-2.4-6-6-9.6-12-10 6-.4 9.6-4 12-10z"/></svg>
+        </span>
+        <div class="feature-txt">
+          <h3>极纯净</h3>
+          <p>拒绝广告弹窗，还你沉浸式追番体验。</p>
+        </div>
+      </li>
+      <li>
+        <span class="feature-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z"/></svg>
+        </span>
+        <div class="feature-txt">
+          <h3>秒加载</h3>
+          <p>极速播放器，告别卡顿与缓冲。</p>
+        </div>
+      </li>
+      <li>
+        <span class="feature-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h13v2H4V4zm0 5h13v2H4V9zm0 5h9v2H4v-2zm12.2-1.6 4.3 4.3-1.4 1.4-4.3-4.3a3 3 0 1 1 1.4-1.4zM18.5 15l1.7 1.7.8-.8-1.7-1.7a1.7 1.7 0 1 0-.8.8z"/></svg>
+        </span>
+        <div class="feature-txt">
+          <h3>海量番</h3>
+          <p>每日实时更新，新番第一时间看。</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 底部 / 下载 ===== -->
+<footer class="footer" id="download">
+  <div class="footer-inner">
+    <div class="footer-info">
+      <div class="footer-brand">
+        <img src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/EZJQbKY0GoqJEex9dt4clfGPnvc" alt="樱花动漫图标">
+        <span>樱花动漫</span>
+      </div>
+      <p class="copyright">© 2024 樱花动漫 版权所有</p>
+      <p class="footer-links">
+        <a href="mailto:feedback@sakura-anime.app">意见反馈</a>
+        <i>/</i>
+        <a href="mailto:coop@sakura-anime.app">商务合作</a>
+      </p>
+    </div>
+    <div class="qr-card">
+      <div class="qr-box">
+        <img src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Z6pibGYtWozDmSxay1sca8Y7nwC" alt="樱花动漫安卓版下载二维码">
+      </div>
+      <p>扫码直接下载安卓包</p>
+    </div>
+  </div>
+  <div class="footer-word" aria-hidden="true">樱花动漫</div>
+</footer>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 樱花飘落 */
+  if(!reduceMotion){
+    var holder = document.querySelector('.petals');
+    var colors = ['#FFB6D9','#FF9BCB','#FF69B4','#FFD6EA'];
+    var frag = document.createDocumentFragment();
+    for(var i=0;i<18;i++){
+      var p = document.createElement('span');
+      p.className = 'petal';
+      var sway = (Math.random()*120 - 60).toFixed(0);
+      p.style.cssText = [
+        '--x:' + (Math.random()*100).toFixed(1) + 'vw',
+        '--sway:' + sway + 'px',
+        '--sz:' + (9 + Math.random()*13).toFixed(1) + 'px',
+        '--o:' + (0.22 + Math.random()*0.4).toFixed(2),
+        '--c:' + colors[i % colors.length],
+        '--d:' + (9 + Math.random()*10).toFixed(1) + 's',
+        '--dl:' + (-Math.random()*16).toFixed(1) + 's'
+      ].join(';');
+      p.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2c2 5.2 5.2 8.2 10 8.6-4.8.4-8 3.4-10 8.6-2-5.2-5.2-8.2-10-8.6 4.8-.4 8-3.4 10-8.6z"/></svg>';
+      frag.appendChild(p);
+    }
+    holder.appendChild(frag);
+  }
+
+  /* Toast */
+  var toast = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 3200);
+  }
+
+  /* 邮箱预约提醒 */
+  var form = document.querySelector('.subscribe');
+  var input = form.querySelector('input');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var val = input.value.trim();
+    var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
+    if(!ok){
+      input.focus();
+      showToast('请输入有效的邮箱地址');
+      return;
+    }
+    try{
+      var list = JSON.parse(localStorage.getItem('sakura_waitlist') || '[]');
+      if(list.indexOf(val) === -1){
+        list.push(val);
+        localStorage.setItem('sakura_waitlist', JSON.stringify(list));
+      }
+    }catch(err){}
+    input.value = '';
+    showToast('已登记，iOS 上线第一时间通知您');
+  });
+
+  /* 进入页面自动播放音乐：先尝试自动播放，被浏览器拦截时轻触任意处即开 */
+  var bgm = document.getElementById('bgm');
+  var bgmUnlockArmed = false;
+  function playBgm(){
+    if(bgm.paused){
+      var p = bgm.play();
+      if(p && p.catch){ p.catch(function(){}); }
+    }
+  }
+  playBgm();
+  setTimeout(function(){
+    if(bgm.paused){
+      bgmUnlockArmed = true;
+      showToast('浏览器拦截了自动播放，轻触页面任意位置即可开启音乐');
+    }
+  }, 800);
+  function unlockBgmOnce(){
+    if(!bgmUnlockArmed){ return; }
+    bgmUnlockArmed = false;
+    playBgm();
+    window.removeEventListener('pointerdown', unlockBgmOnce);
+    window.removeEventListener('touchstart', unlockBgmOnce);
+    window.removeEventListener('keydown', unlockBgmOnce);
+  }
+  window.addEventListener('pointerdown', unlockBgmOnce);
+  window.addEventListener('touchstart', unlockBgmOnce);
+  window.addEventListener('keydown', unlockBgmOnce);
+})();
+</script>
+</body>
+</html>
+<!-- （注：内容由AI生成） -->
