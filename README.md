@@ -3,7 +3,7 @@
 
 <div align="center">
 
-![樱花动漫 Logo](https://aerate.s3.cn-north-1.jdcloud-oss.com/2026/9/22/6ab1f8a0e4b0e7f3dcb5922a.png.min.jpg)
+![樱花动漫 Logo](logo.jpg)
 
 **次元入口，触手可及**
 
